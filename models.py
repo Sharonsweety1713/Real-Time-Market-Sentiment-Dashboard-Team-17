@@ -1,8 +1,12 @@
 from sqlalchemy import Column, Integer, Float, String, DateTime, Text, ForeignKey
 from sqlalchemy.orm import relationship
+from sqlalchemy import Text
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 import json
+from sqlalchemy import Column, Integer, Float, String, DateTime
+from datetime import datetime
+from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
@@ -13,7 +17,10 @@ class StockSentimentRecommendation(Base):
     timestamp = Column(DateTime, default=datetime.utcnow)
     stock_price = Column(Float, nullable=False)
     average_sentiment = Column(Float, nullable=False)
-    recommendation = Column(String(50), nullable=False)
+    
+
+    recommendation = Column(Text, nullable=False)
+
     headlines = Column(Text)  # store JSON string of headlines
 
     def set_headlines(self, headlines_list):
@@ -25,9 +32,11 @@ class StockSentimentRecommendation(Base):
 class StockPrice(Base):
     __tablename__ = "stock_price"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     symbol = Column(String(10))
     price = Column(Float)
+    price_change = Column(Float)    # Added: price change from previous close
+    percent_change = Column(Float)  # Added: percentage change from previous close
     high = Column(Float)
     low = Column(Float)
     open = Column(Float)
@@ -53,3 +62,12 @@ class SentimentAnalysis(Base):
     sentiment_score = Column(Float)   # 0 = negative, 1 = positive
     sentiment_rating = Column(Integer)  # 1 to 5
     news = relationship("NewsArticle", backref="sentiments")
+    
+class NewsSourceDistribution(Base):
+    __tablename__ = "news_source_distribution"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+    source = Column(String(50))
+    count = Column(Integer)
+    percentage = Column(Float)
